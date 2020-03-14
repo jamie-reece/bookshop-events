@@ -7,7 +7,7 @@ require 'pry'
 
 def write_to_file(data)
   File.open("./_data/events.json", "w") do |file|
-    file.write(JSON.pretty_generate(data.flatten))
+    file.write(JSON.pretty_generate(data))
   end
 end
 
@@ -92,17 +92,6 @@ def scrape_broadway_books
   end
 end
 
-def scrape_all
-  all_events = Array.new
-  all_events << scrape_burley_fisher
-  all_events << scrape_pages('hackney')
-  all_events << scrape_pages('cheshire street')
-  all_events << scrape_libreria
-  write_to_file(all_events)
-end
-
-# scrape_all
-
 def scrape_libreria
   base_url = "https://libreria.io/"
   slug = "cultural-programme/"
@@ -129,7 +118,6 @@ def scrape_libreria
     puts "#{event[:index]+1} #{event[:title]}"
     events << event
   end
-  write_to_file(events)
   return events
 end
 
@@ -139,6 +127,18 @@ def scrape_libreria_modal(url)
   # date = parsed_page.css("section.left").css("div.date").text.strip
   desc = parsed_page.css("section.left").css("div.copy p").text
   return desc
+end
+
+def scrape_all
+  all_events = Array.new
+  all_events << scrape_burley_fisher
+  all_events << scrape_pages('hackney')
+  all_events << scrape_pages('cheshire street')
+  all_events << scrape_libreria
+  arr = all_events.flatten.select { |event| event[:datetime] }
+  now = DateTime.now
+  upcoming_events = arr.delete_if { |event| event[:datetime] < now }
+  write_to_file(upcoming_events)
 end
 
 scrape_all
