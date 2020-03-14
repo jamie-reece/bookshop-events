@@ -47,6 +47,9 @@ body {
   aside {
     flex: 1 0 35%;
     padding-left: 2%;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
 
     .aside-title {
       font-size: 1.6rem;
