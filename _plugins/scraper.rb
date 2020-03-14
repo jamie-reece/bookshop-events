@@ -96,4 +96,33 @@ def scrape_all
   end
 end
 
-scrape_all
+# scrape_all
+
+def scrape_libreria
+  base_url = "https://libreria.io/"
+  slug = "cultural-programme/"
+  url = base_url + slug
+  unparsed_page = HTTParty.get(url)
+  parsed_page = Nokogiri::HTML(unparsed_page)
+  events_list = parsed_page.css("div#whats-content")
+  events_list_items = events_list.css("ul")
+  puts "Found #{events_list_items.count} events at #{url}"
+  binding.pry
+  events = Array.new
+  events_list_items.each_with_index do |event_list_item, index|
+    event = {
+      index: index,
+      bookshop: "Burley Fisher Books",
+      category: "East",
+      title: event_list_item.css("h3.tribe-events-list-event-title").text.strip,
+      date_string: event_list_item.css("div.tribe-event-schedule-details").text.strip,
+      datetime: DateTime.parse(event_list_item.css("div.tribe-event-schedule-details").text.strip, "%d %B @ %l:%M %P"),
+      url: event_list_item.css("a.tribe-event-url")[0].attributes["href"].value,
+      summary: event_list_item.css("div.tribe-events-list-event-description").text.strip.split("\n").first,
+      img_src: event_list_item.css("div.tribe-events-event-image img")[0].attributes["src"].value
+    }
+    puts "#{event[:index]+1} #{event[:title]}"
+    events << event
+  end
+  return events
+end
