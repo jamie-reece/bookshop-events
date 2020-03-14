@@ -9,7 +9,7 @@ layout: default
 
 # Upcoming events
 
-{% assign events_sorted = site.data.events | sort: "datetime" %}
+{% assign events_sorted = site.data.events | sort: "datetime" | reverse %}
 
 <div class="events-list">
   <h2>March</h2>
