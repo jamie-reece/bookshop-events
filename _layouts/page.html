@@ -10,6 +10,11 @@
     <p class="todays-date">{{ site.time | date_to_long_string: "ordinal", "US" }}</p>
     {% include header.html %}
     {{ content }}
+    {% if page.layout != 'default' %}
+    <section>
+      <p class="signoff"><em><a href="{{ site.baseurl }}/">Return home</a></em></p>
+    </section>
+    {% endif %}
   </article>
   </main>
   <aside>
