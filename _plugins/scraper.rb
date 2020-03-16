@@ -11,7 +11,7 @@ def write_to_file(data)
   end
 end
 
-def scrape_burley_fisher
+def burley_fisher
   base_url = "https://burleyfisherbooks.com"
   slug = "/events/"
   url = base_url + slug
@@ -39,7 +39,7 @@ def scrape_burley_fisher
   return events
 end
 
-def scrape_pages(branch)
+def pages(branch)
   base_url = branch == "hackney" ? "https://pagesof#{branch}.co.uk" : "https://pages#{branch.gsub(/\s/,'')}.co.uk"
   slug = "/events/"
   url = base_url + slug
@@ -67,7 +67,7 @@ def scrape_pages(branch)
   return events
 end
 
-def scrape_broadway_books
+def broadway_bookshop
   base_url = "https://broadwaybookshophackney.com"
   slug = "/events/"
   url = base_url + slug
@@ -92,7 +92,7 @@ def scrape_broadway_books
   end
 end
 
-def scrape_libreria
+def libreria
   base_url = "https://libreria.io/"
   slug = "cultural-programme/"
   url = base_url + slug
@@ -112,7 +112,7 @@ def scrape_libreria
       date_string: event_list_item.css("div.date").text.strip,
       datetime: (DateTime.parse(event_list_item.css("div.date").text.strip,"%d %B %Y") rescue nil),
       url: base_url + slug + event_list_item.attributes["data-url"].value[1..-1],
-      summary: scrape_libreria_modal(base_url + slug + event_list_item.attributes["data-url"].value[1..-1]),
+      summary: libreria_modal(base_url + slug + event_list_item.attributes["data-url"].value[1..-1]),
       img_src: event_list_item.css("div.image img")[0].attributes["src"].value
     }
     puts "#{event[:index]+1} #{event[:title]}"
@@ -121,7 +121,7 @@ def scrape_libreria
   return events
 end
 
-def scrape_libreria_modal(url)
+def libreria_modal(url)
   unparsed_page = HTTParty.get(url)
   parsed_page = Nokogiri::HTML(unparsed_page)
   # date = parsed_page.css("section.left").css("div.date").text.strip
@@ -129,16 +129,55 @@ def scrape_libreria_modal(url)
   return desc
 end
 
-def scrape_all
+def scrape
   all_events = Array.new
-  all_events << scrape_burley_fisher
-  all_events << scrape_pages('hackney')
-  all_events << scrape_pages('cheshire street')
-  all_events << scrape_libreria
+  all_events << burley_fisher
+  all_events << pages('hackney')
+  all_events << pages('cheshire street')
+  all_events << libreria
   arr = all_events.flatten.select { |event| event[:datetime] }
   now = DateTime.now
   upcoming_events = arr.delete_if { |event| event[:datetime] < now }
   write_to_file(upcoming_events)
 end
 
-scrape_all
+scrape
+
+def brick_lane_bookshop
+  url = https://www.bricklanebookshop.org/events.html
+end
+
+def newham_bookshop
+  url = https://www.newhambooks.co.uk/
+end
+
+def white_review
+  url = https://www.thewhitereview.org/news_and_events/
+end
+
+def lrb
+  url = https://www.lrb.co.uk/events
+end
+
+def rsl
+  url = https://rsliterature.org/whats-on/
+end
+
+def daunt
+  url = https://dauntbooks.co.uk/events/
+end
+
+def foyles
+end
+
+def waterstones
+end
+
+def gays_the_word
+end
+
+def spineless
+end
+
+def dinner_party
+end
