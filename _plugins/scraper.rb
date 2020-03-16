@@ -129,12 +129,52 @@ def libreria_modal(url)
   return desc
 end
 
+def lrb
+  base_url = "https://www.lrb.co.uk/"
+  slug = "events/"
+  url = base_url + slug
+  unparsed_page = HTTParty.get(url)
+  parsed_page = Nokogiri::HTML(unparsed_page)
+  events_list = parsed_page.css("div.eventspage-list--contents")
+  events_list_items = events_list.css("div.eventspage-list--item")
+  puts "Found #{events_list_items.count} events at #{url}"
+  # binding.pry
+  events = Array.new
+  events_list_items.each_with_index do |event_list_item, index|
+    event = {
+      index: index,
+      bookshop: "London Review Bookshop",
+      category: "Central",
+      title: event_list_item.css("div.itemContents div.title h2 a").text.strip,
+      date_string: event_list_item.css("div.itemContents div.date").text.strip,
+      datetime: (DateTime.parse(event_list_item.css("div.itemContents div.date").text.strip,"%d %B %Y at %l:%M%p") rescue nil),
+      url: event_list_item.css("div.itemContents div.title h2 a")[0].attributes["href"].value,
+      summary: lrb_modal(event_list_item.css("div.itemContents div.title h2 a")[0].attributes["href"].value),
+      img_src: event_list_item.css("div.itemImage-holder span")[0].attributes["data-bg"].value
+    }
+    puts "#{event[:index]+1} #{event[:title]}"
+    events << event
+  end
+  # write_to_file(events)
+  return events
+end
+
+def lrb_modal(url)
+  unparsed_page = HTTParty.get(url)
+  parsed_page = Nokogiri::HTML(unparsed_page)
+  desc = parsed_page.css("div.js-xd-read-more-contents p").text
+  return desc
+end
+
+# lrb
+
 def scrape
   all_events = Array.new
   all_events << burley_fisher
   all_events << pages('hackney')
   all_events << pages('cheshire street')
   all_events << libreria
+  all_events << lrb
   arr = all_events.flatten.select { |event| event[:datetime] }
   now = DateTime.now
   upcoming_events = arr.delete_if { |event| event[:datetime] < now }
@@ -143,41 +183,37 @@ end
 
 scrape
 
-def brick_lane_bookshop
-  url = https://www.bricklanebookshop.org/events.html
-end
+# def brick_lane_bookshop
+#   url = https://www.bricklanebookshop.org/events.html
+# end
 
-def newham_bookshop
-  url = https://www.newhambooks.co.uk/
-end
+# def newham_bookshop
+#   url = https://www.newhambooks.co.uk/
+# end
 
-def white_review
-  url = https://www.thewhitereview.org/news_and_events/
-end
+# def white_review
+#   url = https://www.thewhitereview.org/news_and_events/
+# end
 
-def lrb
-  url = https://www.lrb.co.uk/events
-end
+# def rsl
+#   url = https://rsliterature.org/whats-on/
+# end
 
-def rsl
-  url = https://rsliterature.org/whats-on/
-end
+# def daunt
+#   url = https://dauntbooks.co.uk/events/
+# end
 
-def daunt
-  url = https://dauntbooks.co.uk/events/
-end
+# def foyles
+# end
 
-def foyles
-end
+# def waterstones
+# end
 
-def waterstones
-end
+# def gays_the_word
+# end
 
-def gays_the_word
-end
+# def spineless
+# end
 
-def spineless
-end
-
-def dinner_party
-end
+# def dinner_party
+# end

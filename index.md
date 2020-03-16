@@ -5,8 +5,6 @@
 layout: default
 ---
 
-{{ site.time | date_to_long_string: "ordinal", "US" }}
-
 # Upcoming events
 
 {% assign events_sorted = site.data.events | sort: "datetime" %}

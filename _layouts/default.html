@@ -7,6 +7,7 @@
   {% include before.html %}
   <main>
   <article>
+    <p class="todays-date">{{ site.time | date_to_long_string: "ordinal", "US" }}</p>
     {% include header.html %}
     {{ content }}
     {% if page.layout != 'index' %}
