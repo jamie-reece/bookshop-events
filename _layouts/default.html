@@ -6,11 +6,12 @@
 <body>
   {% include before.html %}
   <main>
-  <article>
-    <p class="todays-date">{{ site.time | date_to_long_string: "ordinal", "US" }}</p>
-    {% include header.html %}
-    {{ content }}
-  </article>
+    <article>
+      <p style="font-size:1.2rem;"><a href="/">{{ site.title | upcase }}</a>.</p>
+      <p class="todays-date">{{ site.time | date_to_long_string: "ordinal", "US" }}</p>
+      {% include header.html %}
+      {{ content }}
+    </article>
   </main>
   <aside>
     {% include aside.html %}

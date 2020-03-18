@@ -67,31 +67,6 @@ def pages(branch)
   return events
 end
 
-def broadway_bookshop
-  base_url = "https://broadwaybookshophackney.com"
-  slug = "/events/"
-  url = base_url + slug
-  unparsed_page = HTTParty.get(url)
-  parsed_page = Nokogiri::HTML(unparsed_page)
-  events = Array.new
-  counter = 0
-  counter_end = parsed_page.css("div#content h3.news").length
-  while counter < counter_end
-    puts "#{counter}"
-    event = {
-      title: "#{parsed_page.css("div#content h3.news")[counter].text}",
-      date_string: "#{parsed_page.css("div#content p.pub")[counter].css("strong").text}",
-      # datetime: "#{DateTime.parse(parsed_page.css("div#content p.pub")[counter].css("strong").text, "%A, %d %B")}",
-      desc: "#{parsed_page.css("div#content p.pub")[counter].next_element.text}"
-    }
-    events << event
-    counter += 1
-  end
-  File.open("./_data/events.json", "w") do |file|
-    file.write(JSON.pretty_generate(events))
-  end
-end
-
 def libreria
   base_url = "https://libreria.io/"
   slug = "cultural-programme/"
@@ -124,7 +99,6 @@ end
 def libreria_modal(url)
   unparsed_page = HTTParty.get(url)
   parsed_page = Nokogiri::HTML(unparsed_page)
-  # date = parsed_page.css("section.left").css("div.date").text.strip
   desc = parsed_page.css("section.left").css("div.copy p").text
   return desc
 end
@@ -166,7 +140,36 @@ def lrb_modal(url)
   return desc
 end
 
-# lrb
+def broadway_books
+  base_url = "http://broadwaybookshophackney.com/"
+  slug = "events/"
+  url = base_url + slug
+  unparsed_page = HTTParty.get(url)
+  parsed_page = Nokogiri::HTML(unparsed_page)
+  events_list = parsed_page.css("div#content")
+  puts "Found #{events_list.css(".news").count} events at #{url}"
+  events = Array.new
+  counter = 0
+  while counter < events_list.css(".news").count do
+    event = {
+      index: counter,
+      bookshop: "Broadway Bookshop",
+      category: "East",
+      title: events_list.css(".news")[counter].text.strip,
+      date_string: events_list.css(".news + .pub")[counter].text.strip,
+      datetime: (DateTime.parse(events_list.css(".news + .pub")[counter].text.strip,"%A, %e %B %Y") rescue nil),
+      url: url,
+      summary: events_list.css(".news + .pub + p")[counter].text,
+      img_src: ""
+    }
+    events << event
+    puts "#{event[:index]+1} #{event[:title]}"
+    counter += 1
+  end
+  # binding.pry
+  # write_to_file(events)
+  return events
+end
 
 def scrape
   all_events = Array.new
@@ -175,6 +178,7 @@ def scrape
   all_events << pages('cheshire street')
   all_events << libreria
   all_events << lrb
+  all_events << broadway_books
   arr = all_events.flatten.select { |event| event[:datetime] }
   now = DateTime.now
   upcoming_events = arr.delete_if { |event| event[:datetime] < now }
