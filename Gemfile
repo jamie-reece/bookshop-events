@@ -23,7 +23,7 @@ group :jekyll_plugins do
   gem 'httparty', '~> 0.17.1'
   gem "nokogiri", ">= 1.10.8"
   gem 'json', '~> 1.8', '>= 1.8.3'
-  gem 'date', '~> 0.0.1'
+  gem 'date', '~> 2.0.1'
   gem 'pry', '~> 0.12.2'
   gem "tufte-pandoc-jekyll"
 end
