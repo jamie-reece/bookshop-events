@@ -20,7 +20,7 @@ gem "minima", "~> 2.0"
 # If you have any plugins, put them here!
 group :jekyll_plugins do
   gem "jekyll-feed", "~> 0.6"
-  gem 'httparty', '~> 0.17.1'
+  gem 'httparty', '~> 0.21.0'
   gem "nokogiri", ">= 1.10.8"
   gem 'json', '~> 1.8', '>= 1.8.3'
   gem 'date', '~> 0.0.1'
